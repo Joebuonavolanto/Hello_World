@@ -6,4 +6,4 @@
 
 Hello,
 
-I am Joe Buonavolanto from Illinois. I am a Business Analytics student at the University of Iowa.
+I am Joe Buonavolanto from Illinois. I am a Business Analytics student at the University of Iowa's Tippie School of Business.
