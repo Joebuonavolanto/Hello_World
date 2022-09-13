@@ -1,0 +1,61 @@
+mlb <- read.csv('Final_df_Cleaned.csv')
+
+#############################
+
+# Question 1 #
+# count of players by birth country who have made the playoffs # 
+library(dplyr)
+playoff <- mlb[mlb$Playoffs==1,]
+playoff
+
+pc_for_summary <- group_by(playoff, Birth_Country)
+pc_for_summary
+playoffbycountry_summary <- summarize(pc_for_summary, Count=n())
+playoffbycountry_summary
+
+# graph 
+library(ggplot2)
+ggplot(playoffbycountry_summary, aes(x = Birth_Country, y = Count, fill=Count)) +
+  geom_bar(position="stack", stat = "identity") +
+  geom_text(aes(label = Count), size = 3, hjust = 0.5, vjust = 3, position="stack")
+
+# Question 2 #
+# correlations #
+library(corrplot)
+correlationDF <- subset(mlb, select = -c(Player, Birth_Country, College, Team))
+
+# all data correlation
+cor(correlationDF$Playoffs)
+corrplot(cor(correlationDF))
+
+# correlation of 0.92
+cor(correlationDF$AVG, correlationDF$HR)
+
+# correlation of AVG vs OBS plotted
+plot(correlationDF$AVG, correlationDF$HR, pch = 19, xlab = "Batting Average", ylab = "On Base Percentage")
+abline(lm(correlationDF$HR ~ correlationDF$AVG), col = "red", lwd = 3)
+
+
+# Question 3 #
+## regression ##
+# average for multiple features, grouped by Team 
+teams <- group_by(mlb, Team)
+avg_HR <- summarize(teams, AvgHR=mean(HR))
+BattingAvg <- summarize(teams, BattingAvg=mean(AVG))
+Wins <- summarize(teams, Win_Perc=mean(Win_Percentage))
+AvgWeight <- summarize(teams, AvgWeight=mean(Weight))
+AvgHeight <- summarize(teams, AvgHeight=mean(Height))
+AvgOBS <- summarize(teams, AvgOBS=mean(OBS))
+
+# merging averages into same df
+averages_per_team <- merge(avg_HR, BattingAvg)
+averages_per_team <- merge(averages_per_team, Wins)
+averages_per_team <- merge(averages_per_team, AvgWeight)
+averages_per_team <- merge(averages_per_team, AvgHeight)
+averages_per_team <- merge(averages_per_team, AvgOBS)
+
+# Question 4 #
+# What factor gets you to the playoffs? #
+
+cor(correlationDF$HR, correlationDF$Playoffs)
+plot(correlationDF$HR, correlationDF$Playoffs, pch = 19)
